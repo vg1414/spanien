@@ -389,6 +389,11 @@ body.picking-location{overflow:hidden;}
   animation:hero-breathe 26s ease-in-out infinite alternate;
   transition:filter 1.5s ease;
 }
+/* Ehrborg har ett eget foto: takpannor ner mot havet i Torreblanca */
+:root[data-home="ehrborg"] .hero-bg{
+  background-image:url("images/ehrborg-view.jpg");
+  background-position:50% 48%;
+}
 /* Väldigt långsam "andning" i bilden — känns levande utan att synas */
 @keyframes hero-breathe{from{scale:1.02;}to{scale:1.09;}}
 .hero-tint{

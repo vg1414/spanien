@@ -1174,6 +1174,8 @@ function refreshAll() {
 
 function selectBeach(beachId) {
   localStorage.setItem("badapp:lastBeach", beachId);
+  // Styr vilket hero-foto som visas (CSS läser data-home)
+  document.documentElement.dataset.home = beachId;
   buildLocationGrid(beachId, (id) => {
     selectBeach(id);
     hideLocationPicker();

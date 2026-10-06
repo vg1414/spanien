@@ -2,6 +2,9 @@
 
 Alla ändringar i projektet loggas här med datum.
 
+## 2026-10-06
+- La casa del Ehrborg har nu ett eget hero-foto (`images/ehrborg-view.jpg`, takpannor ner mot havet i Torreblanca). Sidan märks med `data-home` så CSS kan välja rätt foto per hus
+
 ## 2026-09-24 (nya designen live)
 - Beta-versionen ("Citron & terrakotta") ersätter nu den riktiga appen på huvudadressen — se de två beta-posterna nedan för allt som ändrats
 - `beta/` är nu bara en omdirigering till huvudsidan, och beta-appens service worker tar bort sig själv
