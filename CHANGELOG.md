@@ -3,6 +3,7 @@
 Alla ändringar i projektet loggas här med datum.
 
 ## 2026-10-06 (nytt namn: Spanien)
+- Platsväljaren: alla tre huskorten är nu lika breda — Lindström ligger centrerat på egen rad under de andra två
 - Adressen är nu med litet s: https://vg1414.github.io/spanien/ (GitHub Pages skiljer på stora och små bokstäver)
 - Projektet och GitHub-repot heter nu **Spanien** istället för Bad. Ny adress: https://vg1414.github.io/spanien/
 - Gamla adressen /Bad/ skickar automatiskt vidare till den nya (via ett litet omdirigerings-repo `vg1414/Bad`). Den som har appen på hemskärmen bör lägga till den på nytt från nya adressen

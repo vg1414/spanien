@@ -314,8 +314,9 @@ body.picking-location{overflow:hidden;}
   background:var(--limon-soft);
 }
 .home-choice:nth-child(2)::before{background:var(--cielo-soft);}
-/* Tredje huset (Lindström) tar hela bredden, så rutnätet inte får ett hål */
-.home-choice:nth-child(3){grid-column:1 / -1;min-height:150px;}
+/* Tredje huset (Lindström) läggs centrerat på egen rad, lika brett som
+   de andra två (halva bredden minus halva mellanrummet på 0.8rem) */
+.home-choice:nth-child(3){grid-column:1 / -1;justify-self:center;width:calc(50% - 0.4rem);}
 .home-choice:nth-child(3)::before{background:var(--teja-soft);}
 .home-choice svg{position:relative;width:64px;height:64px;}
 .home-choice-name{
