@@ -2,6 +2,11 @@
 
 Alla ändringar i projektet loggas här med datum.
 
+## 2026-10-06 (nytt namn: Spanien)
+- Projektet och GitHub-repot heter nu **Spanien** istället för Bad. Ny adress: https://vg1414.github.io/Spanien/
+- Gamla adressen /Bad/ skickar automatiskt vidare till den nya (via ett litet omdirigerings-repo `vg1414/Bad`). Den som har appen på hemskärmen bör lägga till den på nytt från nya adressen
+- Appens namn är nu "Spanien — Costa del Sol" (fliktitel, manifest, README) istället för "Badläget". Sparade val (valt hus m.m.) följer med eftersom de sparas per domän
+
 ## 2026-10-06
 - Nytt hus: **La casa del Lindström** (Calle Picasso 7, Nerja). Väder och vatten är medelvärde av Playa Calahonda, Playa de Burriana och Playa Carabeo. Flagglänk till oceanaria.es för Nerja
 - Lindström: närmaste mataffärer Carrefour Market (El Capistrano) och Mercadona (Sierramar), båda 9–21:30 mån–lör, stängt söndag. ALSA-buss från Av. de Pescia till Málaga busstation och flygplatsen

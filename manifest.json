@@ -1,7 +1,7 @@
 {
-  "name": "Spanien — Badläget Costa del Sol",
+  "name": "Spanien — Costa del Sol",
   "short_name": "Spanien",
-  "description": "Vågor, temperatur och uppskattad flaggfärg för stränderna i Torremolinos/Benalmádena, plus vädret hemma i Västerås.",
+  "description": "Vågor, temperatur och uppskattad flaggfärg för stränderna i Torremolinos/Benalmádena/Fuengirola/Nerja, plus vädret hemma i Sverige.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
