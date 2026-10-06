@@ -3,6 +3,7 @@
 Alla ändringar i projektet loggas här med datum.
 
 ## 2026-10-06 (nytt namn: Spanien)
+- Tåg- och busslänkarna räknar inte längre med promenad: Ehrborgs tåg utgår från Torreblanca station och Lindströms buss från Nerjas busstation (förut husets adress). L-5 är oförändrad
 - Mercadona (Torremolinos och Nerja) visar "Stängt (helgdag)" på Andalusiens 12 helgdagar 2026 plus ortens två lokala dagar (Torremolinos 16/7, 29/9; Nerja 15/5, 24/6). Butiker kan nu ha en egen lista `closedDates`
 - Förhandsvisning när länken delas (WhatsApp m.fl.): Open Graph-taggar med titel, beskrivning och appikonen (`og-image.png`)
 - Platsväljaren: alla tre huskorten är nu lika breda — Lindström ligger centrerat på egen rad under de andra två
