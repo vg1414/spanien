@@ -949,6 +949,16 @@ function renderHome(city, data) {
 // --- 13. Mataffärer nära respektive hem -------------------------------
 // Öppettider hämtade manuellt (Google Maps) — uppdatera själv om en
 // affär ändrar sina ordinarie tider.
+// Mercadona håller stängt på alla helgdagar (inte bara de fyra stora ovan).
+// Andalusiens 12 helgdagar 2026 enligt Junta de Andalucía (BOJA), plus två
+// lokala dagar per ort. Fylls på med nästa års datum när de publiceras.
+const ANDALUCIA_HOLIDAYS_2026 = [
+  "2026-01-01", "2026-01-06", "2026-02-28", "2026-04-02", "2026-04-03", "2026-05-01",
+  "2026-08-15", "2026-10-12", "2026-11-02", "2026-12-07", "2026-12-08", "2026-12-25",
+];
+const MERCADONA_CLOSED_TORREMOLINOS = [...ANDALUCIA_HOLIDAYS_2026, "2026-07-16", "2026-09-29"];
+const MERCADONA_CLOSED_NERJA = [...ANDALUCIA_HOLIDAYS_2026, "2026-05-15", "2026-06-24"];
+
 const STORES_BY_HOME = {
   // Nära C. Antonio García Fernández 7 (La casa del Hefner)
   hefner: [
@@ -977,6 +987,7 @@ const STORES_BY_HOME = {
       brandFg: "#ffffff",
       distance: "~500 m",
       mapsUrl: "https://www.google.com/maps/search/?api=1&query=Mercadona+Torremolinos&query_place_id=ChIJXRr-ufD9cg0RRHg-ptLm7Po",
+      closedDates: MERCADONA_CLOSED_TORREMOLINOS,
       hours: { mon: { open: "09:00", close: "22:00" }, tue: { open: "09:00", close: "22:00" }, wed: { open: "09:00", close: "22:00" }, thu: { open: "09:00", close: "22:00" }, fri: { open: "09:00", close: "22:00" }, sat: { open: "09:00", close: "22:00" }, sun: { open: "09:00", close: "15:00" } },
     },
     {
@@ -1049,6 +1060,7 @@ const STORES_BY_HOME = {
       brandFg: "#ffffff",
       distance: "~550 m",
       mapsUrl: "https://www.google.com/maps/search/?api=1&query=Mercadona+Calle+Sierramar+Nerja",
+      closedDates: MERCADONA_CLOSED_NERJA,
       hours: { mon: { open: "09:00", close: "21:30" }, tue: { open: "09:00", close: "21:30" }, wed: { open: "09:00", close: "21:30" }, thu: { open: "09:00", close: "21:30" }, fri: { open: "09:00", close: "21:30" }, sat: { open: "09:00", close: "21:30" } },
     },
   ],
@@ -1077,6 +1089,9 @@ function renderStores(rowId, stores) {
   const dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   const todayKey = dayKeys[now.getDay()];
   const mandatoryClosed = isMandatoryClosedToday(now);
+  // Dagens datum som "ÅÅÅÅ-MM-DD" (lokal tid) för att jämföra med closedDates
+  const pad = (n) => String(n).padStart(2, "0");
+  const todayIso = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 
   stores.forEach((store) => {
     const todayHours = store.hours[todayKey];
@@ -1084,7 +1099,7 @@ function renderStores(rowId, stores) {
     let statusText = "Stängt idag";
     let hoursText = "";
 
-    if (mandatoryClosed) {
+    if (mandatoryClosed || store.closedDates?.includes(todayIso)) {
       statusText = "Stängt (helgdag)";
     } else if (todayHours) {
       const nowMin = now.getHours() * 60 + now.getMinutes();

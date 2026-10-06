@@ -17,7 +17,7 @@ Live: https://vg1414.github.io/spanien/
 - **Väderkort**: vattentemp och lufttemp (inkl. "känns som" och dagens max), vågor, vind och UV med korta ordbeskrivningar
 - **Solbåge** som visar var solen står, med nedräkning till solnedgång/soluppgång och gyllene timmen
 - **Timprognos** (24 h, med regnrisk och måne på natten) och **flerdagarsprognos** (5 dagar)
-- **Närmaste mataffärer** med dagsaktuella öppettider, klickbara till Google Maps — egna listor för Hefner, Ehrborg och Lindström (Carrefour Market och Mercadona i Nerja)
+- **Närmaste mataffärer** med dagsaktuella öppettider (Mercadona känner även av andalusiska och lokala helgdagar), klickbara till Google Maps — egna listor för Hefner, Ehrborg och Lindström (Carrefour Market och Mercadona i Nerja)
 - **Transport**: tåg från El Pinillo (Hefner) mot Málaga, Fuengirola och Plaza Mayor; för Ehrborg lokalbussen L-5 och tåg från Torreblanca station mot Málaga och Fuengirola; för Lindström ALSA-bussen från Nerja till Málaga busstation och flygplatsen — länkar till Google Maps med riktiga avgångstider
 - **Euro ↔ kronor**-räknare med ECB:s dagskurs (sparas för användning utan nät)
 - **Vädret hemma i Sverige** med timprognos och jämförelse mot Spanien för kommande dagar — Västerås för Hefner/Ehrborg, Stockholm och Sjövik (i samma kort) för Lindström

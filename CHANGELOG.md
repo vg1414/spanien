@@ -3,6 +3,8 @@
 Alla ändringar i projektet loggas här med datum.
 
 ## 2026-10-06 (nytt namn: Spanien)
+- Mercadona (Torremolinos och Nerja) visar "Stängt (helgdag)" på Andalusiens 12 helgdagar 2026 plus ortens två lokala dagar (Torremolinos 16/7, 29/9; Nerja 15/5, 24/6). Butiker kan nu ha en egen lista `closedDates`
+- Förhandsvisning när länken delas (WhatsApp m.fl.): Open Graph-taggar med titel, beskrivning och appikonen (`og-image.png`)
 - Platsväljaren: alla tre huskorten är nu lika breda — Lindström ligger centrerat på egen rad under de andra två
 - Adressen är nu med litet s: https://vg1414.github.io/spanien/ (GitHub Pages skiljer på stora och små bokstäver)
 - Projektet och GitHub-repot heter nu **Spanien** istället för Bad. Ny adress: https://vg1414.github.io/spanien/
