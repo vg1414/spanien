@@ -5,7 +5,7 @@
 // ============================================================
 
 // --- 1. Stränderna bakom de två husen ----------------------
-// Man väljer bara mellan husen (Hefner och Ehrborg). Stränderna nedan
+// Man väljer bara mellan husen (Hefner, Ehrborg och Lindström). Stränderna nedan
 // används i bakgrunden: husens värden är medelvärden av dessa.
 const BEACHES = [
   { id: "saltillo",     name: "Playa del Saltillo",    town: "Torremolinos",  lat: 36.6025, lon: -4.5135 },
@@ -13,6 +13,9 @@ const BEACHES = [
   { id: "jose",         name: "Playa José",            town: "Torremolinos",  lat: 36.6018, lon: -4.5084 },
   { id: "fuentesalud",  name: "Fuente de la Salud",    town: "Benalmádena",   lat: 36.5990, lon: -4.5101 },
   { id: "torreblanca",  name: "Playa de Torreblanca",  town: "Fuengirola",    lat: 36.5688, lon: -4.5936 },
+  { id: "calahonda",    name: "Playa Calahonda",       town: "Nerja",         lat: 36.7450, lon: -3.8751 },
+  { id: "burriana",     name: "Playa de Burriana",     town: "Nerja",         lat: 36.7468, lon: -3.8640 },
+  { id: "carabeo",      name: "Playa Carabeo",         town: "Nerja",         lat: 36.7464, lon: -3.8728 },
 ];
 
 // Ordningen spelar roll: index 2 (Playa José) används som "representant"
@@ -24,17 +27,36 @@ const HEFNER_MEMBER_IDS = ["saltillo", "carihuela", "jose", "fuentesalud"];
 // som den strandens egna data — men den får ändå ett eget hem-läge.
 const EHRBORG_MEMBER_IDS = ["torreblanca"];
 
+// Lindström: medel av tre stränder i Nerja. Carabeo ligger på index 2 och
+// blir därmed "representant" — den ligger rakt söderut från huset.
+const LINDSTROM_MEMBER_IDS = ["calahonda", "burriana", "carabeo"];
+
 const HOMES = [
   { id: "hefner", name: "La casa del Hefner", sub: "Torremolinos · El Pinillo" },
   { id: "ehrborg", name: "La casa del Ehrborg", sub: "Fuengirola · Torreblanca" },
+  { id: "lindstrom", name: "La casa del Lindström", sub: "Nerja · Calle Picasso" },
 ];
-const HOME = { name: "Västerås", lat: 59.6099, lon: 16.5448 };
+// Hemorterna i Sverige som jämförs med Spanien. Varje hus har sina egna:
+// Lindström visar Stockholm och Sjövik tillsammans i ett kort, de andra
+// husen Västerås. "color" är stapelfärgen i jämförelsen.
+const HOME_CITIES = [
+  { id: "vasteras",  name: "Västerås",  lat: 59.6099, lon: 16.5448, color: "se" },
+  { id: "stockholm", name: "Stockholm", lat: 59.3293, lon: 18.0686, color: "se" },
+  { id: "sjovik",    name: "Sjövik",    lat: 57.9159, lon: 12.3706, color: "se2" },
+];
+const HOME_CITIES_BY_HOUSE = {
+  hefner: ["vasteras"],
+  ehrborg: ["vasteras"],
+  lindstrom: ["stockholm", "sjovik"],
+};
 
 const DEFAULT_BEACH_ID = "hefner";
 
 // Senast hämtade data, så att delar som behöver båda platserna
-// (jämförelsen Spanien–Västerås) kan ritas när båda har kommit in.
-const state = { beachWeather: null, homeWeather: null, beachAir: null };
+// (jämförelsen Spanien–Sverige) kan ritas när båda har kommit in.
+// homeWeathers håller väder per hemort, t.ex. { stockholm: {...} }.
+// homeCities är hemorterna som visas för valt hus just nu.
+const state = { beachWeather: null, homeWeathers: {}, homeCities: [], beachAir: null };
 
 // --- 2. Hjälpfunktioner för att bygga API-adresser ----------
 function marineUrl(lat, lon) {
@@ -463,6 +485,7 @@ function setLoadingState(beach) {
 const OCEANARIA_TORREMOLINOS = "https://oceanaria.es/malaga/torremolinos/playas";
 const OCEANARIA_BENALMADENA = "https://oceanaria.es/malaga/benalmadena/playas";
 const OCEANARIA_FUENGIROLA = "https://oceanaria.es/malaga/fuengirola/playas";
+const OCEANARIA_NERJA = "https://oceanaria.es/malaga/nerja/playas";
 const FLAG_LINKS = {
   hefner: [
     { label: "Riktig flagga, Torremolinos", url: OCEANARIA_TORREMOLINOS },
@@ -473,6 +496,7 @@ const FLAG_LINKS = {
   // oceanaria.es har ingen egen sida för Torreblanca — Carvajal-La Torre är
   // närmaste strand de faktiskt listar, så länken pekar dit istället.
   ehrborg: [{ label: "Riktig flagga, Carvajal-La Torre", url: OCEANARIA_FUENGIROLA }],
+  lindstrom: [{ label: "Riktig flagga, Nerja", url: OCEANARIA_NERJA }],
 };
 
 function renderFlagLinks(beachId) {
@@ -601,44 +625,52 @@ function renderHourly(weather, rowId = "hourlyRow") {
   });
 }
 
-// --- 9. Spanien mot Västerås ------------------------------------------
-// Ritas först när BÅDA platsernas data har kommit in. Staplarnas längd
-// räknas ut från det lägsta och högsta värdet av alla tio temperaturer,
-// så skillnaden syns tydligt oavsett årstid.
+// --- 9. Spanien mot hemorterna -----------------------------------------
+// Ritas först när Spaniens och minst en hemorts data har kommit in.
+// Staplarnas längd räknas ut från det lägsta och högsta värdet av alla
+// temperaturer, så skillnaden syns tydligt oavsett årstid. Varje dag får
+// en stapel för Spanien plus en per hemort (två för Lindström).
 function renderCompare() {
-  const es = state.beachWeather, se = state.homeWeather;
-  const chip = document.getElementById("diffChip");
-  if (!es || !se) return;
+  const es = state.beachWeather;
+  const cities = state.homeCities.filter((c) => state.homeWeathers[c.id]);
+  if (!es || !cities.length) return;
 
-  if (state.beachAir != null && se.current?.temperature_2m != null) {
+  // "X° kallare än här" — en etikett per hemort
+  cities.forEach((c) => {
+    const chip = document.getElementById(`${c.id}-diffChip`);
+    const se = state.homeWeathers[c.id];
+    if (!chip || state.beachAir == null || se.current?.temperature_2m == null) return;
     const diff = Math.round(state.beachAir - se.current.temperature_2m);
     chip.hidden = false;
     chip.textContent = diff > 0 ? `${diff}° kallare än här` : diff < 0 ? `${-diff}° varmare än här` : "Lika varmt som här";
-  }
+  });
 
   const rows = document.getElementById("compareRows");
   const esMax = es.daily?.temperature_2m_max ?? [];
-  const seMax = se.daily?.temperature_2m_max ?? [];
-  const n = Math.min(5, esMax.length, seMax.length);
-  const all = [...esMax.slice(0, n), ...seMax.slice(0, n)].filter((v) => v != null);
+  const seMaxes = cities.map((c) => state.homeWeathers[c.id].daily?.temperature_2m_max ?? []);
+  const n = Math.min(5, esMax.length, ...seMaxes.map((m) => m.length));
+  const all = [...esMax.slice(0, n), ...seMaxes.flatMap((m) => m.slice(0, n))].filter((v) => v != null);
   const lo = Math.min(...all) - 3, hi = Math.max(...all);
   const pct = (v) => 22 + 78 * ((v - lo) / (hi - lo || 1));
 
   rows.innerHTML = "";
   for (let i = 0; i < n; i++) {
     const day = i === 0 ? "Idag" : new Date(es.daily.time[i]).toLocaleDateString("sv-SE", { weekday: "short" }).replace(".", "");
+    const seBars = cities.map((c, k) =>
+      `<span class="compare-bar ${c.color}" data-w="${pct(seMaxes[k][i])}">${Math.round(seMaxes[k][i])}°</span>`).join("");
     const el = document.createElement("div");
     el.className = "compare-row";
     el.innerHTML = `
       <span class="compare-day">${day}</span>
       <span class="compare-bars">
         <span class="compare-bar es" data-w="${pct(esMax[i])}">${Math.round(esMax[i])}°</span>
-        <span class="compare-bar se" data-w="${pct(seMax[i])}">${Math.round(seMax[i])}°</span>
+        ${seBars}
       </span>`;
     rows.appendChild(el);
   }
+  const legend = cities.map((c) => `<span><i class="${c.color}"></i>${c.name}, max</span>`).join("");
   rows.insertAdjacentHTML("beforeend",
-    `<div class="compare-legend"><span><i style="background:var(--teja)"></i>Spanien, max</span><span><i style="background:#5E9CC8"></i>Västerås, max</span></div>`);
+    `<div class="compare-legend"><span><i class="es"></i>Spanien, max</span>${legend}</div>`);
   // Staplarna växer ut från 0 — nästa bildruta så att CSS-övergången syns
   requestAnimationFrame(() => requestAnimationFrame(() => {
     rows.querySelectorAll(".compare-bar").forEach((b) => { b.style.width = b.dataset.w + "%"; });
@@ -736,7 +768,7 @@ function animateAllStatValues() {
   document.querySelectorAll(".stat-value").forEach(animateCountUp);
 }
 
-// --- 11. Hem-medelvärden (Hefner / Ehrborg) --------------------------
+// --- 11. Hem-medelvärden (Hefner / Ehrborg / Lindström) --------------------------
 // Generisk laddning för ett "hem" (medelvärde av en eller flera stränder).
 async function loadHomeAverage(homeId, memberIds, displayName) {
   setLoadingState({ name: displayName });
@@ -812,6 +844,7 @@ function averageMembers(marines, weathers) {
 const HOME_NOTES = {
   hefner: "Medelvärde av Playa del Saltillo, La Carihuela, Playa José och Fuente de la Salud.",
   ehrborg: "Data för Playa de Torreblanca, närmaste strand från Calle las Tórtolas.",
+  lindstrom: "Medelvärde av Playa Calahonda, Playa de Burriana och Playa Carabeo i Nerja.",
 };
 
 function showHomeNote(homeId) {
@@ -821,35 +854,96 @@ function showHomeNote(homeId) {
   note.style.display = "block";
 }
 
-// --- 12. Västerås -----------------------------------------------------
-async function loadHome() {
+// --- 12. Hemma i Sverige -----------------------------------------------
+// Kortet byggs om varje gång man byter hus. Med en hemort ser det ut som
+// förut ("Hemma i Västerås"). Med två (Lindström) får varje ort en egen
+// rad med namn, temperatur och "kallare än här", och en egen timrad.
+// Id:n får ortens id som prefix (t.ex. "sjovik-homeTemp") så de inte krockar.
+function buildHomeCard(houseId) {
+  const card = document.getElementById("homeCard");
+  if (!card) return;
+  const ids = HOME_CITIES_BY_HOUSE[houseId] ?? ["vasteras"];
+  const cities = ids.map((id) => HOME_CITIES.find((c) => c.id === id));
+  const multi = cities.length > 1;
+  state.homeCities = cities;
+
+  const nowBlock = (c) => `
+    <div class="home-now${multi ? " home-now-multi" : ""}">
+      <span class="home-now-icon" id="${c.id}-homeCond"></span>
+      <div class="home-now-main">
+        ${multi ? `<span class="home-city-name">${c.name}</span>` : ""}
+        <span class="stat-value" id="${c.id}-homeTemp">–</span>
+        <span class="home-now-sub"><span id="${c.id}-homeFeels"></span> · <span id="${c.id}-homeMax"></span> · <span id="${c.id}-homeWind"></span></span>
+      </div>
+      ${multi ? `<span class="diff-chip" id="${c.id}-diffChip" hidden></span>` : ""}
+    </div>`;
+  const hourlyBlock = (c) => `
+    ${multi ? `<h4 class="home-city-sub">${c.name}</h4>` : ""}
+    <div class="hourly-row" id="${c.id}-homeHourlyRow"></div>`;
+  const names = cities.map((c) => c.name).join(" & ");
+
+  card.innerHTML = `
+    <div class="home-card-header">
+      <h2>Hemma i ${names}</h2>
+      ${multi ? "" : `<span class="diff-chip" id="${cities[0].id}-diffChip" hidden></span>`}
+    </div>
+    ${cities.map(nowBlock).join("")}
+    <div class="home-block">
+      <h3>Kommande timmar</h3>
+      ${cities.map(hourlyBlock).join("")}
+    </div>
+    <div class="home-block">
+      <h3>Spanien mot ${multi ? "Sverige" : names}</h3>
+      <div class="compare" id="compareRows"></div>
+    </div>`;
+
+  // Har vädret redan hämtats (t.ex. vid byte av hus) ritas det direkt,
+  // annars (om förra hämtningen misslyckades) görs ett nytt försök.
+  cities.forEach((c) => {
+    if (state.homeWeathers[c.id]) renderHome(c, state.homeWeathers[c.id]);
+    else if (state.homeLoaded) loadHomeCity(c);
+  });
+}
+
+// Hämtar vädret för alla hemorter på en gång (bara några små anrop), så
+// att det redan finns när man byter hus.
+function loadHome() {
+  return Promise.all(HOME_CITIES.map(loadHomeCity)).then(() => { state.homeLoaded = true; });
+}
+
+async function loadHomeCity(city) {
+  const cacheKey = `badapp:home:${city.id}`;
   try {
-    const res = await fetch(weatherUrl(HOME.lat, HOME.lon));
-    if (!res.ok) throw new Error("Kunde inte hämta hemma-väder");
+    const res = await fetch(weatherUrl(city.lat, city.lon));
+    if (!res.ok) throw new Error(`Kunde inte hämta väder för ${city.name}`);
     const data = await res.json();
-    localStorage.setItem("badapp:home", JSON.stringify({ data, ts: Date.now() }));
-    renderHome(data);
+    localStorage.setItem(cacheKey, JSON.stringify({ data, ts: Date.now() }));
+    renderHome(city, data);
   } catch (err) {
     console.error(err);
-    const cached = localStorage.getItem("badapp:home");
-    if (cached) renderHome(JSON.parse(cached).data);
+    // Västerås sparades förr under "badapp:home" — används som reserv
+    const cached = localStorage.getItem(cacheKey) ?? (city.id === "vasteras" ? localStorage.getItem("badapp:home") : null);
+    if (cached) renderHome(city, JSON.parse(cached).data);
   }
 }
 
-function renderHome(data) {
-  state.homeWeather = data;
+function renderHome(city, data) {
+  state.homeWeathers[city.id] = data;
+  // Orten kanske inte visas för valt hus — då sparas bara datan
+  const $ = (id) => document.getElementById(`${city.id}-${id}`);
+  if (!$("homeTemp")) return;
   const temp = data.current?.temperature_2m;
   const feelsLike = data.current?.apparent_temperature;
   const maxTempToday = data.daily?.temperature_2m_max?.[0];
   const wind = data.current?.wind_speed_10m;
-  document.getElementById("homeTemp").textContent = temp != null ? `${Math.round(temp)}°` : "–";
-  document.getElementById("homeFeels").textContent = feelsLike != null ? `känns som ${Math.round(feelsLike)}°` : "";
-  document.getElementById("homeMax").textContent = maxTempToday != null ? `max ${Math.round(maxTempToday)}°` : "";
-  document.getElementById("homeWind").textContent = wind != null ? `${fmt(wind, 1)} m/s` : "–";
-  document.getElementById("homeCond").innerHTML = weatherIcon(data.current?.weather_code, data.current?.is_day ?? 1);
-  renderHourly(data, "homeHourlyRow");
+  $("homeTemp").textContent = temp != null ? `${Math.round(temp)}°` : "–";
+  $("homeFeels").textContent = feelsLike != null ? `känns som ${Math.round(feelsLike)}°` : "";
+  $("homeMax").textContent = maxTempToday != null ? `max ${Math.round(maxTempToday)}°` : "";
+  $("homeWind").textContent = wind != null ? `${fmt(wind, 1)} m/s` : "–";
+  $("homeCond").innerHTML = weatherIcon(data.current?.weather_code, data.current?.is_day ?? 1);
+  renderHourly(data, `${city.id}-homeHourlyRow`);
   renderCompare();
-  animateCountUp(document.getElementById("homeTemp"));
+  animateCountUp($("homeTemp"));
 }
 
 // --- 13. Mataffärer nära respektive hem -------------------------------
@@ -934,6 +1028,28 @@ const STORES_BY_HOME = {
       distance: "~2,3 km · med L-5-bussen",
       mapsUrl: "https://www.google.com/maps/search/?api=1&query=Mercado+Virgen+del+Carmen+Los+Boliches+Fuengirola",
       hours: { mon: { open: "08:30", close: "15:00" }, tue: { open: "08:30", close: "15:00" }, wed: { open: "08:30", close: "15:00" }, thu: { open: "08:30", close: "15:00" }, fri: { open: "08:30", close: "15:00" }, sat: { open: "09:00", close: "13:30" } },
+    },
+  ],
+  // Nära Calle Picasso 7 (La casa del Lindström), Nerja. Båda ligger
+  // uppe vid N-340, en kort promenad österut från huset.
+  lindstrom: [
+    {
+      name: "Carrefour Market (El Capistrano)",
+      short: "Carrefour",
+      brandBg: "#004E9E",
+      brandFg: "#ffffff",
+      distance: "~500 m",
+      mapsUrl: "https://www.google.com/maps/search/?api=1&query=Carrefour+Market+El+Capistrano+Nerja",
+      hours: { mon: { open: "09:00", close: "21:30" }, tue: { open: "09:00", close: "21:30" }, wed: { open: "09:00", close: "21:30" }, thu: { open: "09:00", close: "21:30" }, fri: { open: "09:00", close: "21:30" }, sat: { open: "09:00", close: "21:30" } },
+    },
+    {
+      name: "Mercadona (Sierramar)",
+      short: "Mercadona",
+      brandBg: "#00A65E",
+      brandFg: "#ffffff",
+      distance: "~550 m",
+      mapsUrl: "https://www.google.com/maps/search/?api=1&query=Mercadona+Calle+Sierramar+Nerja",
+      hours: { mon: { open: "09:00", close: "21:30" }, tue: { open: "09:00", close: "21:30" }, wed: { open: "09:00", close: "21:30" }, thu: { open: "09:00", close: "21:30" }, fri: { open: "09:00", close: "21:30" }, sat: { open: "09:00", close: "21:30" } },
     },
   ],
 };
@@ -1066,10 +1182,12 @@ async function initFx() {
 
 // --- 15. Platsväljaren (fullskärmsvy) ---------------------------------
 // Små illustrationer för de två husen: vitt hus med tegeltak, och en
-// citron (Hefner) respektive en palm (Ehrborg) bredvid.
+// citron (Hefner), en palm (Ehrborg) respektive bougainvillea och havet
+// (Lindström) bredvid.
 const HOUSE_ART = {
   hefner: `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="28" width="30" height="26" rx="3" fill="#FFFDF8" stroke="#E4D3BA" stroke-width="1.5"/><path d="M8 30L27 15l19 15z" fill="var(--teja)" stroke-linejoin="round"/><rect x="23" y="40" width="8" height="14" rx="4" fill="#6EAED8"/><rect x="15" y="34" width="6" height="6" rx="2" fill="#6EAED8" opacity=".6"/><circle cx="50" cy="40" r="9" fill="var(--hoja)"/><rect x="49" y="46" width="2.4" height="9" rx="1" fill="#8A6A45"/><ellipse cx="47" cy="38" rx="3" ry="2.4" fill="var(--limon)"/><ellipse cx="53.5" cy="42" rx="2.8" ry="2.2" fill="var(--limon)"/></svg>`,
   ehrborg: `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="8" y="30" width="30" height="24" rx="3" fill="#FFFDF8" stroke="#E4D3BA" stroke-width="1.5"/><path d="M5 32L23 18l18 14z" fill="var(--teja)"/><rect x="18" y="41" width="8" height="13" rx="4" fill="#6EAED8"/><path d="M50 55c0-10 1-18-1-26" stroke="#8A6A45" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M49 28c-5-5-11-4-13 0 4-2 8-1 13 0zM49 28c5-6 11-5 13-1-4-2-8-1-13 1zM49 28c-1-6 2-10 6-11-2 3-4 6-6 11zM49 28c-3-3-3-8-1-11 0 4 1 7 1 11z" fill="var(--hoja)"/><circle cx="56" cy="10" r="4" fill="var(--limon)"/></svg>`,
+  lindstrom: `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M2 58c6-3 10-3 16 0s10 3 16 0 10-3 16 0 8 3 12 1" stroke="#6EAED8" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="10" y="26" width="28" height="26" rx="3" fill="#FFFDF8" stroke="#E4D3BA" stroke-width="1.5"/><path d="M7 28L24 14l17 14z" fill="var(--teja)"/><rect x="20" y="38" width="8" height="14" rx="4" fill="#6EAED8"/><rect x="13" y="31" width="5" height="5" rx="1.5" fill="#6EAED8" opacity=".6"/><g fill="#D9539A"><circle cx="38" cy="30" r="2.6"/><circle cx="41.5" cy="34" r="2.4"/><circle cx="39" cy="38.5" r="2.2"/><circle cx="42.5" cy="27.5" r="2"/><circle cx="36" cy="25.5" r="1.8"/></g><circle cx="54" cy="16" r="5" fill="var(--limon)"/></svg>`,
 };
 
 function buildLocationGrid(activeId, onSelect) {
@@ -1147,7 +1265,7 @@ function initPullToRefresh() {
 }
 
 // --- 17. Starta appen ---------------------------------------------------
-const HOME_SECTION_IDS = ["hefnerSection", "ehrborgSection"];
+const HOME_SECTION_IDS = ["hefnerSection", "ehrborgSection", "lindstromSection"];
 
 // Sparat val från förr kan vara en enskild strand som inte finns längre —
 // då räknas det som inget val, och man får välja hus på nytt.
@@ -1160,9 +1278,10 @@ function currentId() {
   return savedHomeId() || DEFAULT_BEACH_ID;
 }
 
-// Laddar rätt hus. Allt som inte är Ehrborg blir Hefner.
+// Laddar rätt hus. Allt okänt blir Hefner.
 function loadForId(beachId) {
   if (beachId === "ehrborg") return loadHomeAverage("ehrborg", EHRBORG_MEMBER_IDS, "La casa del Ehrborg");
+  if (beachId === "lindstrom") return loadHomeAverage("lindstrom", LINDSTROM_MEMBER_IDS, "La casa del Lindström");
   return loadHomeAverage("hefner", HEFNER_MEMBER_IDS, "La casa del Hefner");
 }
 
@@ -1182,6 +1301,7 @@ function selectBeach(beachId) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
+  buildHomeCard(beachId);
   HOME_SECTION_IDS.forEach((sectionId) => {
     const section = document.getElementById(sectionId);
     if (section) section.style.display = sectionId === `${beachId}Section` ? "block" : "none";
@@ -1207,6 +1327,7 @@ function init() {
   loadHome();
   renderStores("storesRow", STORES_BY_HOME.hefner);
   renderStores("ehrborgStoresRow", STORES_BY_HOME.ehrborg);
+  renderStores("lindstromStoresRow", STORES_BY_HOME.lindstrom);
   initFx();
   initScrollReveal();
   initTopbarScroll();
@@ -1221,6 +1342,7 @@ function init() {
     applyDaypart(state.beachWeather);
     renderStores("storesRow", STORES_BY_HOME.hefner);
     renderStores("ehrborgStoresRow", STORES_BY_HOME.ehrborg);
+    renderStores("lindstromStoresRow", STORES_BY_HOME.lindstrom);
   }, 60000);
 }
 

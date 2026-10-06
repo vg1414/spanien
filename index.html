@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Badläget — Costa del Sol</title>
-<meta name="description" content="Se vågor, temperatur och uppskattad flaggfärg för stränderna i Torremolinos/Benalmádena, plus vädret hemma i Västerås.">
+<meta name="description" content="Se vågor, temperatur och uppskattad flaggfärg för stränderna i Torremolinos/Benalmádena, plus vädret hemma i Sverige.">
 <meta name="theme-color" content="#FFF8EC" id="themeColor">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -272,6 +272,36 @@
     </section>
   </div>
 
+  <!-- LA CASA DEL LINDSTRÖM: mataffärer + buss -->
+  <div id="lindstromSection" style="display:none">
+    <section class="stores" id="lindstromStoresSection">
+      <h2>Närmaste mataffärer</h2>
+      <div class="stores-row" id="lindstromStoresRow"></div>
+      <p class="section-note">Känner av stora helgdagar (nyår, trettondag, 1 maj, jul). Tryck för att dubbelkolla på kartan.</p>
+    </section>
+
+    <section class="transport" id="lindstromBusSection">
+      <h2>Buss (ALSA) från Nerja</h2>
+      <div class="train-list">
+        <div class="train-card">
+          <div class="train-dir">Málaga busstation</div>
+          <div class="train-links">
+            <a href="https://www.google.com/maps/dir/?api=1&origin=Calle+Picasso+7+Nerja&destination=Estaci%C3%B3n+de+Autobuses+de+M%C3%A1laga&travelmode=transit" target="_blank" rel="noopener">Dit</a>
+            <a href="https://www.google.com/maps/dir/?api=1&origin=Estaci%C3%B3n+de+Autobuses+de+M%C3%A1laga&destination=Calle+Picasso+7+Nerja&travelmode=transit" target="_blank" rel="noopener">Hem</a>
+          </div>
+        </div>
+        <div class="train-card">
+          <div class="train-dir">Málaga flygplats</div>
+          <div class="train-links">
+            <a href="https://www.google.com/maps/dir/?api=1&origin=Calle+Picasso+7+Nerja&destination=Aeropuerto+de+M%C3%A1laga&travelmode=transit" target="_blank" rel="noopener">Dit</a>
+            <a href="https://www.google.com/maps/dir/?api=1&origin=Aeropuerto+de+M%C3%A1laga&destination=Calle+Picasso+7+Nerja&travelmode=transit" target="_blank" rel="noopener">Hem</a>
+          </div>
+        </div>
+      </div>
+      <p class="section-note">ALSA-bussarna går från hållplatsen på Avenida de Pescia, ca 650 m från huset. Resan till Málaga tar runt 1 h 15 min. Kartan räknar med promenaden till hållplatsen. Biljetter och tidtabell: <a href="https://www.alsa.com/ruta/nerja-malaga" target="_blank" rel="noopener">alsa.com</a>.</p>
+    </section>
+  </div>
+
   <!-- EURO ↔ KRONOR -->
   <section class="fx" id="fxSection" aria-label="Euro till kronor">
     <h2>Euro ↔ kronor</h2>
@@ -298,28 +328,9 @@
     </div>
   </section>
 
-  <!-- VÄSTERÅS -->
-  <section class="home-card">
-    <div class="home-card-header">
-      <h2>Hemma i Västerås</h2>
-      <span class="diff-chip" id="diffChip" hidden></span>
-    </div>
-    <div class="home-now">
-      <span class="home-now-icon" id="homeCond"></span>
-      <div class="home-now-main">
-        <span class="stat-value" id="homeTemp">–</span>
-        <span class="home-now-sub"><span id="homeFeels"></span> · <span id="homeMax"></span> · <span id="homeWind"></span></span>
-      </div>
-    </div>
-    <div class="home-block">
-      <h3>Kommande timmar</h3>
-      <div class="hourly-row" id="homeHourlyRow"></div>
-    </div>
-    <div class="home-block">
-      <h3>Spanien mot Västerås</h3>
-      <div class="compare" id="compareRows"></div>
-    </div>
-  </section>
+  <!-- HEMMA I SVERIGE: byggs av app.js. Hefner/Ehrborg visar Västerås,
+       Lindström visar Stockholm och Sjövik i samma kort. -->
+  <section class="home-card" id="homeCard"></section>
 
 </main>
 

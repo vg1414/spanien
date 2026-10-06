@@ -3,6 +3,10 @@
 Alla ändringar i projektet loggas här med datum.
 
 ## 2026-10-06
+- Nytt hus: **La casa del Lindström** (Calle Picasso 7, Nerja). Väder och vatten är medelvärde av Playa Calahonda, Playa de Burriana och Playa Carabeo. Flagglänk till oceanaria.es för Nerja
+- Lindström: närmaste mataffärer Carrefour Market (El Capistrano) och Mercadona (Sierramar), båda 9–21:30 mån–lör, stängt söndag. ALSA-buss från Av. de Pescia till Málaga busstation och flygplatsen
+- Hemma-kortet byggs nu per hus: Hefner/Ehrborg visar Västerås, Lindström visar Stockholm och Sjövik i samma kort (en rad och en timrad per ort, tre staplar per dag i jämförelsen)
+- Platsväljaren: tredje huset tar hela bredden. Service worker-cache uppräknad till v3
 - La casa del Ehrborg har nu ett eget hero-foto (`images/ehrborg-view.jpg`, takpannor ner mot havet i Torreblanca). Sidan märks med `data-home` så CSS kan välja rätt foto per hus
 
 ## 2026-09-24 (nya designen live)

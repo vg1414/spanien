@@ -314,6 +314,9 @@ body.picking-location{overflow:hidden;}
   background:var(--limon-soft);
 }
 .home-choice:nth-child(2)::before{background:var(--cielo-soft);}
+/* Tredje huset (Lindström) tar hela bredden, så rutnätet inte får ett hål */
+.home-choice:nth-child(3){grid-column:1 / -1;min-height:150px;}
+.home-choice:nth-child(3)::before{background:var(--teja-soft);}
 .home-choice svg{position:relative;width:64px;height:64px;}
 .home-choice-name{
   position:relative;
@@ -832,6 +835,19 @@ main h2{
 }
 .compare-bar.es{background:linear-gradient(90deg,#F2B38F,var(--teja));}
 .compare-bar.se{background:linear-gradient(90deg,#A9CDE6,#5E9CC8);}
+/* Andra hemorten (Sjövik) får en grönare blå så staplarna går att skilja åt */
+.compare-bar.se2{background:linear-gradient(90deg,#A8D8C8,#4E9C8A);}
+.compare-legend i.es{background:var(--teja);}
+.compare-legend i.se{background:#5E9CC8;}
+.compare-legend i.se2{background:#4E9C8A;}
+/* Två hemorter i samma kort (Lindström): en rad per ort */
+.home-now-multi{margin:0.7rem 0 0;}
+.home-now-multi + .home-now-multi{padding-top:0.7rem;border-top:1px solid var(--north-panel);}
+.home-now-multi .home-now-main{flex:1;min-width:0;}
+.home-now-multi .stat-value{font-size:1.9rem;}
+.home-city-name{font-weight:800;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--north-dim);}
+.home-now-multi .diff-chip{align-self:flex-start;}
+.home-city-sub{margin:0.5rem 0 0.3rem;font-size:0.78rem;font-weight:800;color:var(--north-dim);}
 .compare-legend{display:flex;gap:0.9rem;font-size:0.72rem;font-weight:700;color:var(--north-dim);margin-top:0.5rem;}
 .compare-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;}
 
