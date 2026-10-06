@@ -18,7 +18,7 @@ Jag (Claude) läser alltid denna filen först när vi fortsätter projektet.
 - [x] Hittat koordinater för stränderna
 - [x] Designplan (färger, typsnitt, layout) bestämd
 - [x] index.html, style.css, app.js, manifest.json, sw.js, ikoner byggda
-- [x] Pushat till GitHub: vg1414/Spanien (hette tidigare Bad), live via GitHub Pages: https://vg1414.github.io/Spanien/
+- [x] Pushat till GitHub: vg1414/spanien (hette tidigare Bad), live via GitHub Pages: https://vg1414.github.io/spanien/
 - [x] Fixad bugg: flaggan låg över texten på mobil
 - [x] Timprognos idag (temp + väderikon per timme, resten av dagen)
 - [x] Lagt till tågkort mot Plaza Mayor (M​álaga), samma mönster som Málaga/Fuengirola

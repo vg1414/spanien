@@ -2,7 +2,7 @@
 
 En liten webbapp (PWA) som visar aktuellt badläge för stränderna i Torremolinos/Benalmádena/Fuengirola/Nerja, samt vädret hemma i Sverige.
 
-Live: https://vg1414.github.io/Spanien/
+Live: https://vg1414.github.io/spanien/
 
 (Gamla adressen https://vg1414.github.io/Bad/ skickar vidare hit via det lilla repot `vg1414/Bad`.)
 
