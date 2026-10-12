@@ -1238,6 +1238,115 @@ function hideLocationPicker() {
   document.body.classList.remove("picking-location");
 }
 
+// --- 15b. Uppmaning: appen öppnad från den gamla /Bad/-ikonen ------------
+// Omdirigeringen på /Bad/ lägger till ?gammal-app=1 när den körs som
+// installerad app (den gamla ikonen). Då visas ett bottenark efter splashen
+// med steg för att byta till nya ikonen — varje gång, tills man har bytt.
+const NEW_APP_URL = "https://vg1414.github.io/spanien/";
+
+function checkOldApp() {
+  const params = new URLSearchParams(location.search);
+  if (!params.has("gammal-app")) return;
+  // Ta bort markeringen ur adressen så att den inte följer med om man laddar om eller delar länken
+  params.delete("gammal-app");
+  const q = params.toString();
+  history.replaceState(null, "", location.pathname + (q ? `?${q}` : "") + location.hash);
+  afterSplash(showOldAppSheet);
+}
+
+function showOldAppSheet() {
+  const wrap = document.getElementById("oldAppSheet");
+  if (!wrap) return;
+  const sheet = wrap.querySelector(".sheet");
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const steps = ios
+    ? [
+        "Håll fingret på den gamla ikonen på hemskärmen och välj <b>Ta bort app</b> (eller <b>Radera bokmärke</b>).",
+        "Öppna <b>Safari</b> och gå till <b>vg1414.github.io/spanien</b>. Knappen nedan kopierar adressen.",
+        "Tryck på dela-ikonen och välj <b>Lägg till på hemskärmen</b>.",
+        "Öppna appen från den nya ikonen.",
+      ]
+    : [
+        "Håll fingret på den gamla ikonen och välj <b>Avinstallera</b> eller <b>Ta bort</b>.",
+        "Öppna <b>Chrome</b> och gå till <b>vg1414.github.io/spanien</b>. Knappen nedan kopierar adressen.",
+        "Tryck på menyn (tre prickar) och välj <b>Lägg till på startskärmen</b> eller <b>Installera app</b>.",
+        "Öppna appen från den nya ikonen.",
+      ];
+  document.getElementById("oldAppSteps").innerHTML = steps.map((t) => `<li>${t}</li>`).join("");
+
+  wrap.hidden = false;
+  document.body.classList.add("sheet-open");
+  // Två bildrutor väntan så att arket hinner ritas nere innan det glider upp
+  requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add("open")));
+
+  const close = () => {
+    if (!wrap.classList.contains("open")) return;
+    sheet.classList.remove("dragging", "springing");
+    sheet.style.removeProperty("--sheet-drag");
+    wrap.classList.remove("open");
+    document.body.classList.remove("sheet-open");
+    setTimeout(() => { wrap.hidden = true; }, 450);
+  };
+
+  // Tryck eller svep på den mörka ytan stänger (pointerdown fångar båda)
+  wrap.querySelector(".sheet-backdrop").addEventListener("pointerdown", close);
+  sheet.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", close));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+
+  const copyBtn = document.getElementById("oldAppCopy");
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(NEW_APP_URL);
+      copyBtn.textContent = "Kopierad! Klistra in i webbläsaren";
+    } catch {
+      copyBtn.textContent = "vg1414.github.io/spanien";
+    }
+  });
+
+  // Svep ner för att stänga: arket följer fingret. Släpper man efter ett långt
+  // drag (30 % av arkets höjd) eller ett snabbt svep stängs det, annars fjädrar
+  // det tillbaka. Draget räknas först efter 6 px så att knapptryck fungerar.
+  let startY = null, lastY = 0, lastT = 0, vel = 0, dragging = false;
+  sheet.addEventListener("pointerdown", (e) => {
+    startY = lastY = e.clientY;
+    lastT = e.timeStamp;
+    vel = 0;
+    dragging = false;
+  });
+  sheet.addEventListener("pointermove", (e) => {
+    if (startY == null) return;
+    const dy = e.clientY - startY;
+    if (!dragging) {
+      if (Math.abs(dy) < 6) return;
+      dragging = true;
+      sheet.setPointerCapture(e.pointerId);
+      sheet.classList.add("dragging");
+    }
+    const dt = e.timeStamp - lastT;
+    if (dt > 0) vel = (e.clientY - lastY) / dt;   // px per ms, positivt = nedåt
+    lastY = e.clientY;
+    lastT = e.timeStamp;
+    // Nedåt följer det fingret, uppåt bara lite (som ett gummiband)
+    const y = dy > 0 ? dy : -Math.sqrt(-dy) * 2;
+    sheet.style.setProperty("--sheet-drag", `${y.toFixed(1)}px`);
+  });
+  const endDrag = (e) => {
+    if (startY == null) return;
+    if (e.timeStamp - lastT > 120) vel = 0;   // fingret stod still innan det släppte
+    const dy = lastY - startY;
+    startY = null;
+    if (!dragging) return;
+    dragging = false;
+    sheet.classList.remove("dragging");
+    if (dy > sheet.offsetHeight * 0.3 || vel > 0.5) { close(); return; }
+    sheet.classList.add("springing");
+    sheet.style.setProperty("--sheet-drag", "0px");
+    setTimeout(() => sheet.classList.remove("springing"), 450);
+  };
+  sheet.addEventListener("pointerup", endDrag);
+  sheet.addEventListener("pointercancel", endDrag);
+}
+
 // --- 16. Dra ner för att uppdatera -------------------------------------
 // Följer fingret när man drar nedåt högst upp på sidan. En citron rullar
 // ner (roterar i takt med dragningen). Släpper man efter tillräckligt
@@ -1255,7 +1364,7 @@ function initPullToRefresh() {
   };
 
   window.addEventListener("touchstart", (e) => {
-    if (busy || window.scrollY > 0 || document.body.classList.contains("picking-location") || document.getElementById("splash")) return;
+    if (busy || window.scrollY > 0 || document.body.classList.contains("picking-location") || document.body.classList.contains("sheet-open") || document.getElementById("splash")) return;
     startY = e.touches[0].clientY;
     pull = 0;
     ptr.classList.remove("releasing");
@@ -1355,6 +1464,7 @@ function init() {
   initTopbarScroll();
   initHeroParallax();
   initPullToRefresh();
+  checkOldApp();
 
   // Statusfältets färg tas över av appen när splashen är borta
   afterSplash(() => {

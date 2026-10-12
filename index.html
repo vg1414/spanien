@@ -80,6 +80,23 @@
   </svg>
 </div>
 
+<!-- UPPMANING: appen öppnades från den gamla /Bad/-ikonen (omdirigeringen
+     skickar med ?gammal-app=1). Bottenark som går att svepa ner. -->
+<div class="sheet-wrap" id="oldAppSheet" hidden>
+  <div class="sheet-backdrop" data-close></div>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="oldAppTitle">
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <p class="eyebrow">Ny adress</p>
+    <h2 id="oldAppTitle">Byt till nya ikonen</h2>
+    <p class="sheet-text">Du öppnade appen från den gamla ikonen, som går till den gamla adressen. Därför syns adressfältet högst upp. Lägg till appen på nytt så blir den helskärm igen.</p>
+    <ol class="sheet-steps" id="oldAppSteps"></ol>
+    <div class="sheet-actions">
+      <button class="sheet-btn sheet-btn-main" id="oldAppCopy">Kopiera nya adressen</button>
+      <button class="sheet-btn" data-close>Jag gör det sen</button>
+    </div>
+  </section>
+</div>
+
 <header class="topbar" id="topbar">
   <div class="topbar-inner">
     <button id="changeLocationBtn" class="place-btn" aria-label="Byt plats">

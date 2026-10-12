@@ -2,6 +2,11 @@
 
 Alla ändringar i projektet loggas här med datum.
 
+## 2026-10-12 (uppmaning för gamla ikonen)
+- Öppnas appen från den gamla /Bad/-ikonen på hemskärmen visas ett bottenark efter splashen: "Byt till nya ikonen", med steg för iPhone eller Android och en knapp som kopierar nya adressen. Visas varje gång via gamla ikonen tills man har bytt
+- Omdirigeringen i repot `vg1414/Bad` känner av om den körs som installerad app och skickar då med `?gammal-app=1`, som appen tar bort ur adressen direkt
+- Arket går att svepa ner (följer fingret, stängs vid långt eller snabbt drag, fjädrar tillbaka annars), och ett tryck eller svep på den mörka ytan stänger. Service worker-cache v6
+
 ## 2026-10-12 (splash: solen blir en citron)
 - Ny intro-animation varje gång appen öppnas (ca 4,4 s): en sol stiger över en tunn havslinje med värmedallring, sväller och snurrar strålarna fortare, och förvandlas sedan till appens citron (strålarna fälls in till blad, skalet får porer och en blank reflex). Citronen studsar en gång och gungar till, och "Spanien" plus husets namn tonar fram (eller "Costa del Sol" första gången)
 - Följer tiden på dygnet: under gyllene timmen är solen lägre och orange mot en varmare himmel, och på natten blir månen till citronen mot stjärnhimlen. Temat räknas ut lokalt (solformel för husets läge), så det stämmer innan väderdatan har laddats

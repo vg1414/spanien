@@ -4,7 +4,7 @@ En liten webbapp (PWA) som visar aktuellt badläge för stränderna i Torremolin
 
 Live: https://vg1414.github.io/spanien/
 
-(Gamla adressen https://vg1414.github.io/Bad/ skickar vidare hit via det lilla repot `vg1414/Bad`.)
+(Gamla adressen https://vg1414.github.io/Bad/ skickar vidare hit via det lilla repot `vg1414/Bad`. Öppnas appen från en gammal hemskärmsikon visas en uppmaning att lägga till den på nytt från nya adressen.)
 
 ## Funktioner
 

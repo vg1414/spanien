@@ -238,6 +238,58 @@ button{font-family:inherit;color:inherit;}
 /* Sidan bakom ska inte gå att scrolla (eller dra-ner-uppdatera) medan splashen syns */
 html.splash-on, html.splash-on body{overflow:hidden;}
 
+/* ===== Bottenark (uppmaningen om gamla ikonen) =====
+   Glider upp nerifrån. Följer fingret när man sveper ner (app.js), och ett
+   tryck eller svep på den mörka ytan utanför stänger. */
+body.sheet-open{overflow:hidden;}
+.sheet-wrap{position:fixed;inset:0;z-index:60;}
+.sheet-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(30,20,14,0.45);
+  opacity:0;
+  transition:opacity 0.35s ease;
+  touch-action:none;
+}
+.sheet-wrap.open .sheet-backdrop{opacity:1;}
+.sheet{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  max-width:520px;
+  margin:0 auto;
+  background:var(--panel);
+  border-radius:28px 28px 0 0;
+  padding:0.6rem 1.4rem calc(1.4rem + env(safe-area-inset-bottom));
+  box-shadow:0 -10px 40px -10px rgba(60,30,10,0.35);
+  transform:translateY(calc(100% + 20px));
+  transition:transform 0.45s var(--ease-out);
+  touch-action:none; /* vi sköter svepet själva */
+}
+.sheet-wrap.open .sheet{transform:translateY(var(--sheet-drag, 0px));}
+.sheet.dragging{transition:none;}
+.sheet.springing{transition:transform 0.45s var(--ease-soft);}
+.sheet-grip{width:42px;height:5px;border-radius:3px;margin:0 auto 1rem;background:rgba(120,78,44,0.22);}
+.sheet h2{margin:0.2rem 0 0.6rem;font-size:1.6rem;line-height:1.1;}
+.sheet-text{margin:0 0 1rem;font-size:0.92rem;line-height:1.55;color:var(--tinta-dim);}
+.sheet-steps{margin:0 0 1.3rem;padding-left:1.2rem;font-size:0.9rem;line-height:1.65;}
+.sheet-steps li{padding-left:0.2rem;margin-bottom:0.25rem;}
+.sheet-actions{display:grid;gap:0.5rem;}
+.sheet-btn{
+  border:0;
+  border-radius:999px;
+  padding:0.85rem 1rem;
+  font-weight:800;
+  font-size:0.95rem;
+  cursor:pointer;
+  background:var(--kal-2);
+  transition:transform 0.3s var(--ease-soft);
+}
+.sheet-btn:active{transform:scale(0.97);}
+.sheet-btn-main{background:var(--limon);color:#3B2A22;}
+:root[data-daypart="night"] .sheet-grip{background:rgba(255,255,255,0.2);}
+:root[data-daypart="night"] .sheet-btn{background:rgba(255,255,255,0.08);}
+:root[data-daypart="night"] .sheet-btn-main{background:var(--limon);color:#3B2A22;}
+
 /* ===== Dra ner för att uppdatera ===== */
 .ptr{
   position:fixed;
