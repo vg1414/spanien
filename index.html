@@ -29,8 +29,43 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,100,1&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<!-- Splashen laddas i <head> så att den kan starta innan resten av sidan visas -->
+<script src="splash-sun.js"></script>
 </head>
 <body>
+
+<!-- SPLASH: solen stiger över havet och förvandlas till citronen (splash-sun.js).
+     Ligger överst så att inget annat (t.ex. husväljaren) hamnar ovanpå. -->
+<div class="splash" id="splash" aria-hidden="true"></div>
+<script>
+  // Startar direkt, innan resten av sidan har laddats. Temat (dag/gyllene/natt)
+  // räknas ut lokalt från husets läge, så ingen väderdata behövs. Det sätts även
+  // på <html> så att appen bakom redan har rätt tema när splashen tonar ut.
+  (function () {
+    const splash = document.getElementById("splash");
+    if (!window.SunSplash) { splash.remove(); return; }
+    const HOUSES = {
+      hefner:    { name: "La casa del Hefner",    lat: 36.6025, lon: -4.5135 },
+      ehrborg:   { name: "La casa del Ehrborg",   lat: 36.5688, lon: -4.5936 },
+      lindstrom: { name: "La casa del Lindström", lat: 36.7464, lon: -3.8728 },
+    };
+    let saved = null;
+    try { saved = HOUSES[localStorage.getItem("badapp:lastBeach")]; } catch (e) {}
+    const spot = saved || HOUSES.hefner;
+    const forced = { natt: "night", gyllene: "golden", dag: "day" }[new URLSearchParams(location.search).get("tema")];
+    const part = forced || SunSplash.daypartFor(spot.lat, spot.lon);
+    document.documentElement.dataset.daypart = part;
+    document.documentElement.classList.add("splash-on");
+    SunSplash.start({
+      el: splash, part, title: "Spanien", sub: saved ? saved.name : "Costa del Sol", restoreTheme: false,
+      onDone() {
+        splash.remove();
+        document.documentElement.classList.remove("splash-on");
+        document.dispatchEvent(new Event("splashdone"));
+      },
+    });
+  })();
+</script>
 
 <!-- Stjärnhimmel: syns bara i natt-temat (styrs av data-daypart på <html>) -->
 <div class="night-sky" aria-hidden="true"></div>

@@ -1,11 +1,12 @@
 // Enkel service worker: cachar bara "app-skalet" (HTML/CSS/JS/ikoner),
 // INTE väderdatan — den ska alltid vara färsk. Det gör att sidan går
 // att installera och öppna snabbt, men väder hämtas alltid på nytt.
-const CACHE_NAME = "badapp-shell-v4";
+const CACHE_NAME = "badapp-shell-v5";
 const SHELL_FILES = [
   "./index.html",
   "./style.css",
   "./app.js",
+  "./splash-sun.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",

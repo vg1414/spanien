@@ -2,6 +2,13 @@
 
 Alla ändringar i projektet loggas här med datum.
 
+## 2026-10-12 (splash: solen blir en citron)
+- Ny intro-animation varje gång appen öppnas (ca 4,4 s): en sol stiger över en tunn havslinje med värmedallring, sväller och snurrar strålarna fortare, och förvandlas sedan till appens citron (strålarna fälls in till blad, skalet får porer och en blank reflex). Citronen studsar en gång och gungar till, och "Spanien" plus husets namn tonar fram (eller "Costa del Sol" första gången)
+- Följer tiden på dygnet: under gyllene timmen är solen lägre och orange mot en varmare himmel, och på natten blir månen till citronen mot stjärnhimlen. Temat räknas ut lokalt (solformel för husets läge), så det stämmer innan väderdatan har laddats
+- Ett tryck var som helst hoppar över. Med "minska rörelse" visas slutläget direkt. Tempot styrs av en enda CSS-variabel, `--splash-k`, som både CSS och JS läser
+- Statusfältets färg följer splashen. Husväljaren, dra-ner-uppdateringen och scrollningen väntar tills splashen är borta, och datan hämtas i bakgrunden under tiden
+- Ny fil `splash-sun.js` (tillagd i service workerns cache, cache-version v5) och testsidan `sol-demo.html` (spela igen, dag/gyllene/natt, tempo)
+
 ## 2026-10-06 (nytt namn: Spanien)
 - Tåg- och busslänkarna räknar inte längre med promenad: Ehrborgs tåg utgår från Torreblanca station och Lindströms buss från Nerjas busstation (förut husets adress). L-5 är oförändrad
 - Mercadona (Torremolinos och Nerja) visar "Stängt (helgdag)" på Andalusiens 12 helgdagar 2026 plus ortens två lokala dagar (Torremolinos 16/7, 29/9; Nerja 15/5, 24/6). Butiker kan nu ha en egen lista `closedDates`

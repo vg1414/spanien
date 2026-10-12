@@ -408,7 +408,14 @@ function applyDaypart(weather) {
   }
   part = THEME_OVERRIDE ?? part;
   document.documentElement.dataset.daypart = part;
-  document.getElementById("themeColor")?.setAttribute("content", THEME_COLORS[part]);
+  // Medan splashen syns har statusfältet splashens färg; appens sätts när den är borta
+  if (!document.getElementById("splash")) document.getElementById("themeColor")?.setAttribute("content", THEME_COLORS[part]);
+}
+
+// Kör fn när splashen har tonat ut (eller direkt om den redan är borta)
+function afterSplash(fn) {
+  if (document.getElementById("splash")) document.addEventListener("splashdone", fn, { once: true });
+  else fn();
 }
 
 // --- 7. Solbågen ----------------------------------------------------
@@ -1248,7 +1255,7 @@ function initPullToRefresh() {
   };
 
   window.addEventListener("touchstart", (e) => {
-    if (busy || window.scrollY > 0 || document.body.classList.contains("picking-location")) return;
+    if (busy || window.scrollY > 0 || document.body.classList.contains("picking-location") || document.getElementById("splash")) return;
     startY = e.touches[0].clientY;
     pull = 0;
     ptr.classList.remove("releasing");
@@ -1348,6 +1355,12 @@ function init() {
   initTopbarScroll();
   initHeroParallax();
   initPullToRefresh();
+
+  // Statusfältets färg tas över av appen när splashen är borta
+  afterSplash(() => {
+    const part = document.documentElement.dataset.daypart;
+    document.getElementById("themeColor")?.setAttribute("content", THEME_COLORS[part] ?? THEME_COLORS.day);
+  });
 
   // Solbågen, temat och butikernas öppet/stängt uppdateras varje minut
   // så att appen stämmer även om den ligger öppen länge.

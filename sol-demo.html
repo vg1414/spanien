@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sol-demo — Spanien</title>
+<meta name="theme-color" content="#FFF8EC" id="themeColor">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,100,1&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="splash-sun.js"></script>
+<style>
+/* ===== Bara för demon ===== */
+.demo-app{padding:5rem 1.5rem;text-align:center;}
+.demo-app h1{font-size:2rem;margin:0 0 .5rem;}
+.demo-app p{color:var(--tinta-dim);}
+.demo-bar{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:200;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:center;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(30,24,20,0.82);
+  backdrop-filter:blur(8px);
+  font-family:var(--font-body);
+  font-size:0.85rem;
+  color:#fff;
+}
+.demo-bar button{
+  border:0;border-radius:999px;padding:7px 13px;font-weight:700;cursor:pointer;
+  background:rgba(255,255,255,0.14);color:#fff;
+}
+.demo-bar button.on{background:#F6D04D;color:#3B2A22;}
+.demo-bar label{display:flex;align-items:center;gap:6px;}
+.demo-bar input[type=range]{width:90px;}
+.demo-info{width:100%;text-align:center;opacity:.75;font-size:.75rem;}
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash" aria-hidden="true"></div>
+
+<div class="demo-app">
+  <h1>Här bakom ligger appen</h1>
+  <p>Splashen tonar ut hit när den är klar. Tryck på "Spela igen" för att se den igen.</p>
+</div>
+
+<div class="demo-bar">
+  <button id="replay">↻ Spela igen</button>
+  <button data-part="auto" class="on">Auto</button>
+  <button data-part="day">Dag</button>
+  <button data-part="golden">Gyllene</button>
+  <button data-part="night">Natt</button>
+  <label><input type="checkbox" id="reduce"> Minska rörelse</label>
+  <label>Tempo <input type="range" id="tempo" min="0.5" max="3" step="0.25" value="1.25"> <span id="tempoVal">1.25</span></label>
+  <div class="demo-info" id="info"></div>
+</div>
+
+<p class="made-by" style="text-align:center">Made by: David Hefner</p>
+
+<script>
+  // El Pinillo, Torremolinos (Hefners hus)
+  const LAT = 36.6025, LON = -4.5135;
+  let choice = "auto";
+  const splash = document.getElementById("splash");
+  const info = document.getElementById("info");
+
+  function fmt(ms) { return new Date(ms).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" }); }
+
+  function play() {
+    const auto = SunSplash.daypartFor(LAT, LON);
+    const part = choice === "auto" ? auto : choice;
+    const { rise, set } = SunSplash.sunTimes(Date.now(), LAT, LON);
+    info.textContent = `Lokal solberäkning för El Pinillo: upp ${fmt(rise)}, ner ${fmt(set)} (spansk tid) → auto blir "${auto}". Visar nu: ${part}.`;
+    document.body.style.background = "";
+    document.documentElement.dataset.daypart = part;
+    SunSplash.start({ el: splash, part, title: "Spanien", sub: "La casa del Hefner", reduce: document.getElementById("reduce").checked });
+  }
+
+  document.querySelectorAll(".demo-bar [data-part]").forEach((b) => b.addEventListener("click", () => {
+    choice = b.dataset.part;
+    document.querySelectorAll(".demo-bar [data-part]").forEach((x) => x.classList.toggle("on", x === b));
+    play();
+  }));
+  document.getElementById("replay").addEventListener("click", play);
+  document.getElementById("reduce").addEventListener("change", play);
+  document.getElementById("tempo").addEventListener("input", (e) => {
+    splash.style.setProperty("--splash-k", e.target.value);
+    document.getElementById("tempoVal").textContent = e.target.value;
+  });
+  document.getElementById("tempo").addEventListener("change", play);
+
+  play();
+</script>
+</body>
+</html>

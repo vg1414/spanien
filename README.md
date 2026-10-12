@@ -8,6 +8,7 @@ Live: https://vg1414.github.io/spanien/
 
 ## Funktioner
 
+- **Intro-animation (splash)**: solen stiger över havet och förvandlas till appens citron, i dag-, gyllene- eller nattversion (då är det månen). Tryck för att hoppa över. Tempot ändras med `--splash-k` i `style.css`, och `sol-demo.html` är en testsida för att spela upp den
 - **Tre hus att välja mellan** i en fullskärmsväljare (valet sparas som förval, byt via platsnamnet högst upp):
   - **La casa del Hefner** — medelvärde av Playa del Saltillo, La Carihuela, Playa José och Fuente de la Salud
   - **La casa del Ehrborg** — baserat på Playa de Torreblanca, närmaste strand från Calle las Tórtolas 14
@@ -40,6 +41,8 @@ Ren HTML/CSS/JS utan byggsteg eller ramverk. Hostas på GitHub Pages.
 | `index.html` | Sidstruktur |
 | `style.css` | Utseende |
 | `app.js` | All logik: datahämtning, flaggberäkning, rendering |
+| `splash-sun.js` | Intro-animationen (sol → citron) och den lokala solberäkningen för temat |
+| `sol-demo.html` | Testsida för splashen (spela igen, dag/gyllene/natt, tempo) |
 | `manifest.json` | PWA-manifest |
 | `sw.js` | Service worker (offline-stöd) |
 | `icon-192.png`, `icon-512.png` | App-ikoner |

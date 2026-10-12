@@ -151,6 +151,93 @@ button{font-family:inherit;color:inherit;}
 @keyframes twinkle{from{opacity:0.25;}to{opacity:1;}}
 :root[data-daypart="night"] .night-sky{opacity:0.75;}
 
+/* ===== Splash: solen som blir en citron =====
+   Ritas av splash-sun.js. Visas varje gång appen öppnas, ca 4,4 s
+   (3,5 s × tempot), och ett tryck var som helst hoppar över. */
+.splash{
+  --splash-k:1.25; /* tempo: 1 = snabbt (ca 3,5 s), högre = långsammare. splash-sun.js läser samma värde */
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(70% 45% at 50% 40%, rgba(246,208,77,0.24), transparent 70%),
+    linear-gradient(180deg,#FFF8EC 0%,#F6EAD4 100%);
+  transition:opacity calc(0.5s * var(--splash-k)) var(--ease-out), visibility 0s linear calc(0.5s * var(--splash-k));
+}
+.splash[data-part="golden"]{
+  background:
+    radial-gradient(70% 45% at 50% 46%, rgba(245,140,80,0.30), transparent 70%),
+    linear-gradient(180deg,#F9C9AC 0%,#FDE3CF 55%,#F7D9C4 100%);
+}
+.splash[data-part="night"]{
+  background:
+    radial-gradient(100% 50% at 80% 0%, rgba(120,110,200,0.24), transparent 65%),
+    linear-gradient(180deg,#161E36 0%,#1A2340 100%);
+}
+/* Samma stjärnhimmel som appen har på natten */
+.splash[data-part="night"]::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:0.75;
+  pointer-events:none;
+  background-image:
+    radial-gradient(1.2px 1.2px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 28% 42%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 47% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 63% 33%, #fff 50%, transparent 51%),
+    radial-gradient(1.3px 1.3px at 81% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 91% 58%, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 8% 66%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 37% 79%, #fff 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 72% 86%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 55% 60%, #fff 50%, transparent 51%);
+  background-size:340px 520px;
+  animation:twinkle 4.5s ease-in-out infinite alternate;
+}
+.splash.splash-out{opacity:0;visibility:hidden;pointer-events:none;}
+.splash-stage{position:relative;width:min(74vw,300px);}
+.splash-svg{display:block;width:100%;height:auto;overflow:visible;}
+.splash-titles{position:relative;text-align:center;margin-top:0.6rem;}
+.splash-title{
+  margin:0;
+  font-family:var(--font-display);
+  font-variation-settings:"SOFT" 100, "WONK" 1;
+  font-weight:600;
+  font-size:2.6rem;
+  line-height:1;
+  letter-spacing:-0.01em;
+  color:#3B2A22;
+  animation:splashTitleIn calc(0.7s * var(--splash-k)) var(--ease-out) calc(2.3s * var(--splash-k)) both;
+}
+.splash-sub{
+  margin:0.45rem 0 0;
+  font-family:var(--font-body);
+  font-weight:700;
+  font-size:0.78rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:rgba(59,42,34,0.62);
+  animation:splashTitleIn calc(0.7s * var(--splash-k)) var(--ease-out) calc(2.48s * var(--splash-k)) both;
+}
+.splash[data-part="night"] .splash-title{color:#F4EAD8;}
+.splash[data-part="night"] .splash-sub{color:rgba(244,234,216,0.62);}
+.splash-still .splash-title,
+.splash-still .splash-sub{animation-delay:0s;animation-duration:0.01s;}
+@keyframes splashTitleIn{
+  from{opacity:0;transform:translateY(12px);filter:blur(5px);}
+  to{opacity:1;transform:none;filter:blur(0);}
+}
+/* Sidan bakom ska inte gå att scrolla (eller dra-ner-uppdatera) medan splashen syns */
+html.splash-on, html.splash-on body{overflow:hidden;}
+
 /* ===== Dra ner för att uppdatera ===== */
 .ptr{
   position:fixed;
